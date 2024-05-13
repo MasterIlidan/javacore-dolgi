@@ -13,6 +13,26 @@ public class Example2 {
 (целочисленный и текстовый).*/
 
     public static void main(String[] args) {
+        SubExample2 subExample2 = new SubExample2("Hello World", 7);
+
+        System.out.println(subExample2);
+        System.out.println();
+
+        subExample2.setValue();
+        System.out.println(subExample2);
+        System.out.println();
+
+        subExample2.setValue(1);
+        System.out.println(subExample2);
+        System.out.println();
+
+        subExample2.setValue("changed");
+        System.out.println(subExample2);
+        System.out.println();
+
+        subExample2.setValue(999,"Changed Again");
+        System.out.println(subExample2);
+        System.out.println();
 
     }
 
@@ -29,15 +49,38 @@ class SuperExample2 {
         return textField.length();
     }
 
-    public void setTextField(String textField) {
+    public void setValue(String textField) {
         this.textField = textField;
     }
 }
 
 class SubExample2 extends SuperExample2 {
-    public int length;
+    public int numField;
 
-    SubExample2(String textField,) {
-        super(textField);
+    SubExample2(String stringValue, int numValue) {
+        super(stringValue);
+        this.numField = numValue;
+    }
+
+    public void setValue(){
+        numField = super.getTextFieldLength();
+    }
+
+    public void setValue(String stringValue) {
+        super.setValue(stringValue);
+    }
+
+    public void setValue(int numValue) {
+        numField = numValue;
+    }
+
+    public void setValue(int numValue, String stringValue) {
+        super.setValue(stringValue);
+        numField = numValue;
+    }
+
+    public String toString() {
+        return "Super class text field length: " + super.getTextFieldLength() +
+                "\nNumber value of sub class is:" + numField;
     }
 }
