@@ -8,7 +8,7 @@ public class Example5 {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         System.out.print("Введите имя файла => ");
-        String filename = sc.nextLine();
+        String filename = sc.nextLine() + ".txt";
         try {
 // Создается файл
             File f1 = new File(filename);
