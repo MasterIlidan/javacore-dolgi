@@ -2,7 +2,6 @@ package laba9;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Random;
 
 public class Compare {
@@ -12,6 +11,10 @@ public class Compare {
     public static void main(String[] args) {
         /*HashSet<Integer> hashSet;
         LinkedHashSet<Integer> linkedHashSet;*/
+
+    }
+
+    private static void ArrayListCompare() {
         ArrayListCompare arrayListCompare = new ArrayListCompare(countOfElements);
 
         arrayListCompare.getAddToStartExecuteTime();
@@ -21,21 +24,48 @@ public class Compare {
         arrayListCompare.getRemoveFromEndExecuteTime();
         arrayListCompare.getRemoveFromMiddleExecuteTime();
 
-        arrayListCompare = new ArrayListCompare(countOfElementsForIndexSearch);
-        arrayListCompare.getRandomAccessExecuteTime();
+        try {
+            arrayListCompare = new ArrayListCompare(countOfElementsForIndexSearch);
+            arrayListCompare.getRandomAccessExecuteTime();
+        } catch (OutOfMemoryError e) {
+            System.out.println("OutOfMemoryError. Skipping...");
+        }
+    }
+
+    private static void HashSetCompare() {
+
     }
 
 
 }
 
-class ArrayListCompare {
-    ArrayList<Integer> arrayList;
+abstract class Comparing<T> {
+    T compareInstance;
+
+    abstract void getAddToStartExecuteTime();
+
+    abstract void getAddToEndExecuteTime();
+
+    abstract void getAddToMiddleExecuteTime();
+
+    abstract void getRemoveFromStartExecuteTime();
+
+    abstract void getRemoveFromEndExecuteTime();
+
+    abstract void getRemoveFromMiddleExecuteTime();
+
+    abstract void getRandomAccessExecuteTime();
+}
+
+
+class ArrayListCompare extends Comparing<ArrayList<Integer>> {
+    //ArrayList<Integer> compareInstance;
 
     ArrayListCompare(long size) {
         if (size > Integer.MAX_VALUE) {
-            arrayList = LongArrayList(Integer.MAX_VALUE-10);
+            compareInstance = LongArrayList(Integer.MAX_VALUE - 10);
         } else {
-            arrayList = LongArrayList((int) size);
+            compareInstance = LongArrayList((int) size);
         }
     }
 
@@ -51,62 +81,146 @@ class ArrayListCompare {
         return arrayList;
     }
 
+    @Override
     public void getAddToStartExecuteTime() {
         System.out.println("Adding item to start...");
         long startTime = System.currentTimeMillis();
-        arrayList.add(1, (int) startTime);
+        compareInstance.add(1, (int) startTime);
         long endTime = System.currentTimeMillis();
         System.out.println("Time taken: " + (endTime - startTime));
     }
 
+    @Override
     public void getAddToEndExecuteTime() {
         System.out.println("Adding item to end...");
         long startTime = System.currentTimeMillis();
-        arrayList.add((int) startTime);
+        compareInstance.add((int) startTime);
         long endTime = System.currentTimeMillis();
         System.out.println("Time taken: " + (endTime - startTime));
     }
 
+    @Override
     public void getAddToMiddleExecuteTime() {
         System.out.println("Adding item to middle...");
         long startTime = System.currentTimeMillis();
-        arrayList.add(arrayList.size() / 2, (int) startTime);
+        compareInstance.add(compareInstance.size() / 2, (int) startTime);
         long endTime = System.currentTimeMillis();
         System.out.println("Time taken: " + (endTime - startTime));
     }
 
+    @Override
     public void getRemoveFromStartExecuteTime() {
         System.out.println("Removing item from start...");
         long startTime = System.currentTimeMillis();
-        arrayList.remove(1);
+        compareInstance.remove(1);
         long endTime = System.currentTimeMillis();
         System.out.println("Time taken: " + (endTime - startTime));
     }
 
+    @Override
     public void getRemoveFromEndExecuteTime() {
         System.out.println("Removing item from end...");
         long startTime = System.currentTimeMillis();
-        arrayList.remove(arrayList.size() - 1);
+        compareInstance.remove(compareInstance.size() - 1);
         long endTime = System.currentTimeMillis();
         System.out.println("Time taken: " + (endTime - startTime));
     }
 
+    @Override
     public void getRemoveFromMiddleExecuteTime() {
         System.out.println("Removing item from middle...");
         long startTime = System.currentTimeMillis();
-        arrayList.remove(arrayList.size() / 2);
+        compareInstance.remove(compareInstance.size() / 2);
         long endTime = System.currentTimeMillis();
         System.out.println("Time taken: " + (endTime - startTime));
     }
 
+    @Override
     public void getRandomAccessExecuteTime() {
-        int index = new Random().nextInt(arrayList.size() - 1);
+        int index = new Random().nextInt(compareInstance.size() - 1);
         System.out.println("Getting random access time for index: " + index);
         long startTime = System.currentTimeMillis();
-        long value = arrayList.get(index);
+        long value = compareInstance.get(index);
         long endTime = System.currentTimeMillis();
         System.out.println("Time taken: " + (endTime - startTime) + " value is " + value);
+    }
+}
 
+class HashSetCompare extends Comparing<HashSet<Integer>> {
 
+    HashSetCompare(long size) {
+        if (size > Integer.MAX_VALUE) {
+            compareInstance = LongHashSet(Integer.MAX_VALUE - 10);
+        } else {
+            compareInstance = LongHashSet((int) size);
+        }
+    }
+
+    private HashSet<Integer> LongHashSet(int countOfElements) {
+        System.out.println("Creating HashSet with " + countOfElements + " elements");
+        long startTime = System.currentTimeMillis();
+        HashSet<Integer> hashSet = new HashSet<>(countOfElements);
+        for (int i = 0; i < countOfElements; i++) {
+            hashSet.add(i);
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime));
+        return hashSet;
+    }
+
+    @Override
+    public void getAddToStartExecuteTime() {
+        System.out.println("Adding item to start...");
+        long startTime = System.currentTimeMillis();
+        compareInstance.add((int) startTime);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime));
+    }
+
+    @Override
+    public void getAddToEndExecuteTime() {
+        System.out.println("HashSet is unordered");
+    }
+
+    @Override
+    public void getAddToMiddleExecuteTime() {
+        System.out.println("HashSet is unordered");
+    }
+
+    @Override
+    public void getRemoveFromStartExecuteTime() {
+        System.out.println("Removing item from start...");
+        long startTime = System.currentTimeMillis();
+        compareInstance.remove(1);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime));
+    }
+
+    @Override
+    public void getRemoveFromEndExecuteTime() {
+        System.out.println("Removing item from end...");
+        long startTime = System.currentTimeMillis();
+        compareInstance.remove(compareInstance.size() - 1);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime));
+    }
+
+    @Override
+    public void getRemoveFromMiddleExecuteTime() {
+        System.out.println("Removing item from middle...");
+        long startTime = System.currentTimeMillis();
+        compareInstance.remove(compareInstance.size() / 2);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime));
+    }
+
+    @Override
+    public void getRandomAccessExecuteTime() {
+        int index = new Random().nextInt(compareInstance.size() - 1);
+        System.out.println("Getting random access time for index: " + index);
+        long startTime = System.currentTimeMillis();
+        boolean value = compareInstance.contains(index);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime) + " value is " + value);
     }
 }
