@@ -2,6 +2,7 @@ package laba9;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Random;
 
 public class Compare {
@@ -9,9 +10,11 @@ public class Compare {
     static final long countOfElementsForIndexSearch = 10L * 1000000000;
 
     public static void main(String[] args) {
-        /*HashSet<Integer> hashSet;
-        LinkedHashSet<Integer> linkedHashSet;*/
-
+        ArrayListCompare();
+        System.out.print("\n\n\n");
+        HashSetCompare();
+        System.out.print("\n\n\n");
+        LinkedHashSetCompare();
     }
 
     private static void ArrayListCompare() {
@@ -33,7 +36,39 @@ public class Compare {
     }
 
     private static void HashSetCompare() {
+        HashSetCompare HashSetCompare = new HashSetCompare(countOfElements);
 
+        HashSetCompare.getAddToStartExecuteTime();
+        HashSetCompare.getAddToEndExecuteTime();
+        HashSetCompare.getAddToMiddleExecuteTime();
+        HashSetCompare.getRemoveFromStartExecuteTime();
+        HashSetCompare.getRemoveFromEndExecuteTime();
+        HashSetCompare.getRemoveFromMiddleExecuteTime();
+
+        try {
+            HashSetCompare = new HashSetCompare(countOfElementsForIndexSearch);
+            HashSetCompare.getRandomAccessExecuteTime();
+        } catch (OutOfMemoryError e) {
+            System.out.println("OutOfMemoryError. Skipping...");
+        }
+    }
+
+    private static void LinkedHashSetCompare() {
+        LinkedHashSetCompare LinkedHashSetCompare = new LinkedHashSetCompare(countOfElements);
+
+        LinkedHashSetCompare.getAddToStartExecuteTime();
+        LinkedHashSetCompare.getAddToEndExecuteTime();
+        LinkedHashSetCompare.getAddToMiddleExecuteTime();
+        LinkedHashSetCompare.getRemoveFromStartExecuteTime();
+        LinkedHashSetCompare.getRemoveFromEndExecuteTime();
+        LinkedHashSetCompare.getRemoveFromMiddleExecuteTime();
+
+        try {
+            LinkedHashSetCompare = new LinkedHashSetCompare(countOfElementsForIndexSearch);
+            LinkedHashSetCompare.getRandomAccessExecuteTime();
+        } catch (OutOfMemoryError e) {
+            System.out.println("OutOfMemoryError. Skipping...");
+        }
     }
 
 
@@ -185,6 +220,93 @@ class HashSetCompare extends Comparing<HashSet<Integer>> {
     @Override
     public void getAddToMiddleExecuteTime() {
         System.out.println("HashSet is unordered");
+    }
+
+    @Override
+    public void getRemoveFromStartExecuteTime() {
+        System.out.println("Removing item from start...");
+        long startTime = System.currentTimeMillis();
+        compareInstance.remove(1);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime));
+    }
+
+    @Override
+    public void getRemoveFromEndExecuteTime() {
+        System.out.println("Removing item from end...");
+        long startTime = System.currentTimeMillis();
+        compareInstance.remove(compareInstance.size() - 1);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime));
+    }
+
+    @Override
+    public void getRemoveFromMiddleExecuteTime() {
+        System.out.println("Removing item from middle...");
+        long startTime = System.currentTimeMillis();
+        compareInstance.remove(compareInstance.size() / 2);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime));
+    }
+
+    @Override
+    public void getRandomAccessExecuteTime() {
+        int index = new Random().nextInt(compareInstance.size() - 1);
+        System.out.println("Getting random access time for index: " + index);
+        long startTime = System.currentTimeMillis();
+        boolean value = compareInstance.contains(index);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime) + " value is " + value);
+    }
+}
+
+class LinkedHashSetCompare extends Comparing<LinkedHashSet<Integer>> {
+
+    LinkedHashSetCompare(long size) {
+        if (size > Integer.MAX_VALUE) {
+            compareInstance = LongLinkedHashSet(Integer.MAX_VALUE - 10);
+        } else {
+            compareInstance = LongLinkedHashSet((int) size);
+        }
+    }
+
+    private LinkedHashSet<Integer> LongLinkedHashSet(int countOfElements) {
+        System.out.println("Creating LinkedHashSet with " + countOfElements + " elements");
+        long startTime = System.currentTimeMillis();
+        LinkedHashSet<Integer> hashSet = new LinkedHashSet<>(countOfElements);
+        for (int i = 0; i < countOfElements; i++) {
+            hashSet.add(i);
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime));
+        return hashSet;
+    }
+
+    @Override
+    public void getAddToStartExecuteTime() {
+        System.out.println("Adding item to start...");
+        long startTime = System.currentTimeMillis();
+        compareInstance.add((int) startTime);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime));
+    }
+
+    @Override
+    public void getAddToEndExecuteTime() {
+        System.out.println("Adding item to end...");
+        long startTime = System.currentTimeMillis();
+        compareInstance.add((int) startTime);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime));
+    }
+
+    @Override
+    public void getAddToMiddleExecuteTime() {
+        System.out.println("Adding item to middle...");
+        long startTime = System.currentTimeMillis();
+        compareInstance.add((int) startTime);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime));
     }
 
     @Override
