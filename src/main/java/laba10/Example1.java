@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.lang.model.util.Elements;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -20,7 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Example1 {
     public static void main(String[] args) throws ExecutionControl.NotImplementedException {
@@ -163,13 +165,32 @@ class XMLSongListEditor {
 
     public ArrayList<String> getSong(String keyWord) {
         //TODO: разобраться с поиском элементов
-        NodeList nodeList = songList.getElementsByTagName("song");
+        NodeList nodeList = songList.getElementsByTagName("Название");
+
         System.out.println(nodeList.getLength());
         for (int i = 0; i < nodeList.getLength(); i++) {
-            System.out.println(nodeList.item(i));
-            Element node = (Element)nodeList.item(0).getFirstChild();
+            //System.out.println(nodeList.item(i));
+            Element songElement = (Element) nodeList.item(i);
+            Element parentElement = (Element) songElement.getParentNode();
+
+
+            System.out.println(songElement.getTextContent());
+            String string = parentElement.getTextContent();
+            string = string.replace("\n", "");
+
+            String[] stringArray = string.split(" ");
+            string = stringArray[0] + "," + stringArray[1] + "," + stringArray[2];
+            System.out.println(string);
+
+            /*Element name = (Element) childNodes.item(0);
+            Element artist = (Element) childNodes.item(1);
+            Element year = (Element) childNodes.item(2);
+            String song = name.getTextContent() + "," + artist.getTextContent() + "," + year.getTextContent();*/
+
+
+
+            //System.out.println(song);;
             //node.getElementsByTagName("Название");
-            System.out.println(node);
         }
         /*NodeList nodeList = songList.getElementsByTagName(keyWord);
         ArrayList<String> result = new ArrayList<>();
