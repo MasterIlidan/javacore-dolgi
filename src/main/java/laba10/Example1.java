@@ -1,13 +1,10 @@
 package laba10;
 
-import jdk.jshell.spi.ExecutionControl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.lang.model.util.Elements;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -22,10 +19,28 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
-
+/*
+1
+Сделайте в текстовом редакторе свой файл в формате XML в зависимости от
+варианта (Приложение 1).
+2
+Добавьте возможность записывать новые книги в XML-файл. Например,
+пользователь может ввести данные о новой книге, а программа добавит новый
+элемент <book> в XML-файл.
+3
+Добавьте возможность поиска книг по автору или году издания. Например,
+пользователь может ввести автора или год издания, а программа выведет список
+книг, удовлетворяющих этому критерию поиска.
+4
+Реализуйте функцию удаления книги из XML-файла. Например, пользователь
+может ввести название книги, которую хочет удалить, и программа удалит
+соответствующий элемент <book> из XML-файла.
+Вариант 10 Музыкальные произведения
+*/
 public class Example1 {
-    public static void main(String[] args) throws ExecutionControl.NotImplementedException {
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         XMLSongListEditor songList = new XMLSongListEditor();
         int input;
@@ -34,7 +49,6 @@ public class Example1 {
             input = scanner.nextInt();
             scanner.nextLine();
             switch (input) {
-
                 case 1: {
                     System.out.print("Enter song name: ");
                     String songName = scanner.nextLine();
@@ -47,22 +61,25 @@ public class Example1 {
                     break;
                 }
                 case 2: {
-                    throw new ExecutionControl.NotImplementedException("delete from");
+                    System.out.print("Enter key word for search: ");
+                    String keyword = scanner.nextLine();
+                    songList.removeSong(keyword);
+                    break;
                 }
                 case 3: {
-                    //throw new ExecutionControl.NotImplementedException("search from");
                     System.out.print("Enter key word for search: ");
                     String keyword = scanner.nextLine();
                     ArrayList<String> searchResult = songList.getSong(keyword);
                     System.out.println("Results: " + searchResult.size());
                     if (searchResult.isEmpty()) break;
-                    System.out.println("Song Name\tArtist\tYear");
+                    System.out.println("Name\tArtist\tYear");
                     for (String serializedSong : searchResult) {
                         String[] song = serializedSong.split(",");
                         System.out.println(song[0] + "\t"
                                 + song[1] + "\t"
                                 + song[2]);
                     }
+                    break;
                 }
                 case 4: {
                     System.out.println("Exiting...");
@@ -122,6 +139,7 @@ class XMLSongListEditor {
         songListDocument = documentBuilder.newDocument();
         Element rootElement = songListDocument.createElement("songs");
         songListDocument.appendChild(rootElement);
+        saveXMLFile();
     }
 
     public void saveXMLFile() {
@@ -163,47 +181,74 @@ class XMLSongListEditor {
         saveXMLFile();
     }
 
+    public void removeSong(String keyword) {
+        NodeList nodeList = songList.getElementsByTagName("Название");
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Element songElement = (Element) nodeList.item(i);
+            Element parentElement = (Element) songElement.getParentNode();
+            if (parentElement.getTextContent().contains(keyword)) {
+                Element mainElement = (Element) parentElement.getParentNode();
+                mainElement.removeChild(parentElement);
+            }
+        }
+        saveXMLFile();
+    }
+
     public ArrayList<String> getSong(String keyWord) {
-        //TODO: разобраться с поиском элементов
         NodeList nodeList = songList.getElementsByTagName("Название");
 
-        System.out.println(nodeList.getLength());
+        //System.out.println(nodeList.getLength());
+
+        ArrayList<String> result = new ArrayList<>();
+
         for (int i = 0; i < nodeList.getLength(); i++) {
-            //System.out.println(nodeList.item(i));
+
             Element songElement = (Element) nodeList.item(i);
             Element parentElement = (Element) songElement.getParentNode();
 
+            //System.out.println(songElement.getTextContent());
+            String rawDataFromXML = parentElement.getTextContent();
 
-            System.out.println(songElement.getTextContent());
-            String string = parentElement.getTextContent();
-            string = string.replace("\n", "");
+            if (!rawDataFromXML.contains(keyWord)) {
+                continue;
+            }
 
-            String[] stringArray = string.split(" ");
-            string = stringArray[0] + "," + stringArray[1] + "," + stringArray[2];
-            System.out.println(string);
+            ArrayList<String> songData = cleanUpRawData(rawDataFromXML);
 
-            /*Element name = (Element) childNodes.item(0);
-            Element artist = (Element) childNodes.item(1);
-            Element year = (Element) childNodes.item(2);
-            String song = name.getTextContent() + "," + artist.getTextContent() + "," + year.getTextContent();*/
+            String resultString = songData.get(0) + "," + songData.get(1) + "," + songData.get(2);
 
+            //System.out.println(rawDataFromXML);
 
-
-            //System.out.println(song);;
-            //node.getElementsByTagName("Название");
+            result.add(resultString);
         }
-        /*NodeList nodeList = songList.getElementsByTagName(keyWord);
-        ArrayList<String> result = new ArrayList<>();
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            NodeList song = nodeList.item(i).getParentNode().getChildNodes();
-            String serializedSong = song.item(0).getTextContent() + ","
-                    + song.item(1).getTextContent() + ","
-                    + song.item(2).getTextContent();
-            result.add(serializedSong);
-        }*/
-        ArrayList<String> result = new ArrayList<>();
+
         return result;
     }
+
+
+    private ArrayList<String> cleanUpRawData(String rawData) {
+        ArrayList<String> temp = new ArrayList<>(List.of(rawData.split("\n")));
+        for (int arrayListIndex = 0; arrayListIndex < temp.size(); arrayListIndex++) {
+            boolean foundFlag = false;
+            char[] chars = temp.get(arrayListIndex).toCharArray();
+
+            for (char c : chars) {
+                if (!(c == ' ')) {
+                    foundFlag = true;
+                    break;
+                }
+            }
+
+            //если это строка без символов - удаляем её и переходим к следующей
+            if (!foundFlag) {
+                temp.remove(arrayListIndex);
+                arrayListIndex--;
+                continue;
+            }
+
+            //убираем лишние пробелы
+            temp.set(arrayListIndex, temp.get(arrayListIndex).trim());
+        }
+        return temp;
+    }
 }
-
-
