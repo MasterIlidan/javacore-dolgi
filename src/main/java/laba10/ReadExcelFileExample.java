@@ -20,6 +20,7 @@ public class ReadExcelFileExample {
         //Получаем лист из книги по его имени
         XSSFSheet sheet = workbook.getSheet("Товары");
 
+        sheet.getRow(4);
         //Перебираем строки и ячейки листа
         for (Row row : sheet) {
             for (Cell cell : row) {

@@ -40,7 +40,6 @@ public class Example2 {
             throw new RuntimeException(e);
         }
 
-
         try {
             while (true) {
                 int input;
@@ -129,12 +128,10 @@ class JSONListEditor {
                 songListDocument = (JSONObject) object;
                 songList = (JSONArray) songListDocument.get("songs");
             } catch (ParseException e) {
-                log.log(Level.WARNING,"An error occurred while reading the JSON file.",e);
+                log.log(Level.WARNING, "An error occurred while reading the JSON file.", e);
                 throw new RuntimeException(e);
             }
         }
-
-
     }
 
     private void createJSONFile() throws IOException {
@@ -150,7 +147,6 @@ class JSONListEditor {
 
         songListDocument.put("songs", songList);
 
-
         FileWriter file = new FileWriter(fileName);
         file.write(songListDocument.toJSONString());
         file.close();
@@ -159,6 +155,8 @@ class JSONListEditor {
     }
 
     public void addNewSong(String name, String author, String year) throws IOException {
+        log.info("Adding new song");
+
         JSONObject song = new JSONObject();
 
         song.put("name", name);
@@ -168,37 +166,57 @@ class JSONListEditor {
         songList.add(song);
 
         saveJSONFile();
+        log.info("Added new song: " + song.toJSONString());
     }
 
-    public void removeSong(String keyword) throws IOException {
-        throw new RuntimeException("Not implemented");
-        //saveJSONFile();
+    public void removeSong(String keyWord) throws IOException {
+        log.info("Searching songs: " + keyWord);
+        ArrayList<JSONObject> toDeleteList = new ArrayList<>();
+        songList.stream()
+                .filter(book -> book instanceof JSONObject)
+                .filter(book ->
+                        keyWord.equals(((JSONObject) book).get("name")) |
+                                keyWord.equals(((JSONObject) book).get("author")) |
+                                keyWord.equals(((JSONObject) book).get("year"))
+                )
+                .forEach(book -> {
+                    System.out.println("\nТекущий элемент: book");
+                    JSONObject bookObject = (JSONObject) book;
+                    /*System.out.println("Название книги: " + bookObject.get("name"));
+                    System.out.println("Автор: " + bookObject.get("author"));
+                    System.out.println("Год издания: " + bookObject.get("year"));*/
+                    toDeleteList.add(bookObject);
+                });
+        log.info("Deleting " + toDeleteList.size() + " songs");
+
+        for (JSONObject book : toDeleteList) {
+            log.info("Removing song: " + book.toJSONString());
+            songList.remove(book);
+        }
+
+        saveJSONFile();
     }
 
     public ArrayList<String> getSong(String keyWord) {
+        log.info("Searching songs: " + keyWord);
         ArrayList<String> result = new ArrayList<>();
         songList.stream()
                 .filter(book -> book instanceof JSONObject)
-                .map(book -> (JSONObject) book)
-                .filter(book -> keyWord.equals(((JSONObject) book).get("author")))
-                .forEach( book -> {
-                    System.out.println("\nТекущий элемент: book");
-
-                    /*System.out.println("Название книги: " + ((JSONObject)book).get("title"));
-                    System.out.println("Автор: " + ((JSONObject) book).get("author"));
-                    System.out.println("Год издания: " + ((JSONObject) book).get("year"));*/
+                .filter(book ->
+                        keyWord.equals(((JSONObject) book).get("name")) |
+                                keyWord.equals(((JSONObject) book).get("author")) |
+                                keyWord.equals(((JSONObject) book).get("year"))
+                )
+                .forEach(book -> {
                     JSONObject bookObject = (JSONObject) book;
-                    System.out.println("Название книги: " + bookObject.get("name"));
+                    log.info("Found: " + ((JSONObject) book).toJSONString());
+                    /*System.out.println("Название книги: " + bookObject.get("name"));
                     System.out.println("Автор: " + bookObject.get("author"));
-                    System.out.println("Год издания: " + bookObject.get("year"));
-                    String serializeSong = bookObject.get("title") + "," + bookObject.get("author") + "," + bookObject.get("year");
+                    System.out.println("Год издания: " + bookObject.get("year"));*/
+                    String serializeSong = bookObject.get("name") + "," + bookObject.get("author") + "," + bookObject.get("year");
                     result.add(serializeSong);
                 });
+        log.info("Searching done. Found: " + result.size());
         return result;
-    }
-
-
-    private ArrayList<String> cleanUpRawData(String rawData) {
-        throw new RuntimeException("Not implemented");
     }
 }
